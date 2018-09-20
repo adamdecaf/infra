@@ -32,7 +32,7 @@ spec:
   selector:
     app: traefik
   ports:
-    - name: dashboard
+    - name: http
       protocol: TCP
       port: 8080
       targetPort: 8080
@@ -79,6 +79,8 @@ data:
       [entryPoints.https.tls]
       minVersion = "VersionTLS12"
       snistrict = true
+      [entryPoints.traefik]
+      address = ":8081"
       # Enable /ping
       [ping]
       entryPoint = "https"
@@ -105,7 +107,46 @@ data:
       namespaces = ["apps", "infra", "lb"]
       [metrics]
       [metrics.prometheus]
+  nginx.conf: |
+    daemon off;
+    worker_processes  1;
+    error_log  /var/log/nginx/error.log warn;
+    # error_log /dev/stdout warn;
+    pid       /var/run/nginx.pid;
+    events {
+      worker_connections  1024;
+    }
+    http {
+      include       /etc/nginx/mime.types;
+      default_type  application/octet-stream;
+      log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+      '$status $body_bytes_sent "$http_referer" '
+      '"$http_user_agent" "$http_x_forwarded_for"';
 
+      access_log  /var/log/nginx/access.log  main;
+      # access_log /dev/stdout main;
+      sendfile        on;
+      #tcp_nopush     on;
+      keepalive_timeout 65;
+      gzip  on;
+      include /opt/nginx/conf.d/*.conf;
+    }
+  default.conf: |
+    server {
+      listen 8080;
+      root /usr/share/nginx/www;
+      index index.html index.htm;
+      location /traefik/ {
+        rewrite    /traefik/(.*) /$1 break;
+        proxy_pass http://localhost:8081/;
+      }
+    }
+  # metrics is for prometheus metrics scraping
+  # (avoid error logs)
+  metrics: |
+    # no content
+  index.html: |
+    nginx - traefik
 
 ---
 # Docs: https://cloud.google.com/kubernetes-engine/docs/concepts/persistent-volumes
@@ -142,6 +183,24 @@ spec:
       serviceAccountName: traefik
       terminationGracePeriodSeconds: 30
       containers:
+      - image: nginx:1.15
+        imagePullPolicy: Always
+        name: nginx
+        args:
+          - nginx
+          - -c
+          - /opt/nginx/nginx.conf
+        volumeMounts:
+          - name: nginx-conf
+            mountPath: /opt/nginx/
+          - name: nginx-temp
+            mountPath: /var/cache/nginx/
+          - name: nginx-www
+            mountPath: /usr/share/nginx/www/
+        ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
       - image: traefik:v1.7
         imagePullPolicy: Always
         name: traefik
@@ -156,7 +215,7 @@ spec:
           - containerPort: 80
             name: proxy
             protocol: TCP
-          - containerPort: 8080
+          - containerPort: 8081
             name: dashboard
             protocol: TCP
       volumes:
@@ -169,6 +228,24 @@ spec:
         - name: traefik-acme
           persistentVolumeClaim:
             claimName: traefik-acme
+        - name: nginx-conf
+          configMap:
+            name: traefik-config
+            items:
+              - key: nginx.conf
+                path: nginx.conf
+              - key: default.conf
+                path: conf.d/default.conf
+        - name: nginx-temp
+          emptyDir: {}
+        - name: nginx-www
+          configMap:
+            name: traefik-config
+            items:
+              - key: metrics
+                path: metrics
+              - key: index.html
+                path: index.html
       restartPolicy: Always
 
 ---

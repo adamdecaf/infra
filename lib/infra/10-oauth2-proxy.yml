@@ -96,7 +96,7 @@ spec:
           - -pass-host-header
           - -provider=github
           - -redirect-url=https://infra.moov.io/oauth2/callback
-          - -upstream=http://grafana.infra.svc.cluster.local:9090/grafana/,http://prometheus.infra.svc.cluster.local:9090/prometheus/,http://traefik-dashboard.lb.svc.cluster.local:8080/traefik,http://kube-ingress-index.infra.svc.cluster.local:8080/
+          - -upstream=http://grafana.infra.svc.cluster.local:9090/grafana/,http://prometheus.infra.svc.cluster.local:9090/prometheus/,http://traefik-dashboard.lb.svc.cluster.local:8080/traefik/,http://kube-ingress-index.infra.svc.cluster.local:8080/
         ports:
           - containerPort: 4180
             name: http
