@@ -1,0 +1,16 @@
+- id: ping
+  upstream:
+    url: https://api.moov.io/
+    preserve_host: false
+  match:
+    url: "http://<.*>/v1/<.*>"
+    methods: [GET, POST]
+  authenticators:
+    - handler: anonymous
+      config:
+        subject: anonymous
+    - handler: oauth2_introspection
+  authorizer:
+    handler: allow
+  mutators:
+    - handler: noop

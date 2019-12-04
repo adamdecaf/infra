@@ -1,0 +1,12 @@
+version: '3'
+services:
+  oathkeeper:
+    image: oryd/oathkeeper:latest
+    volumes:
+      - ./configs/oathkeeper/:/configs/
+    command:
+      - serve
+      - --config=/configs/config.yml
+    ports:
+      - "4455:4455"
+      - "4456:4456"
