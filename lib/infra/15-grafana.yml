@@ -167,7 +167,7 @@ spec:
           limits:
             cpu: 100m
             memory: 50Mi
-      - image: grafana/grafana:6.5.0
+      - image: grafana/grafana:6.5.1
         imagePullPolicy: Always
         name: grafana
         resources:
