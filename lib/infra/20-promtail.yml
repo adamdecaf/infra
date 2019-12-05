@@ -122,7 +122,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName
-        image: grafana/promtail:v1.0.0
+        image: grafana/promtail:v1.1.0
         imagePullPolicy: Always
         name: promtail
         ports:
