@@ -72,7 +72,7 @@ spec:
                 topologyKey: "kubernetes.io/hostname"
               weight: 1
       containers:
-      - image: adamdecaf/stargazers:v0.5.1
+      - image: adamdecaf/stargazers:v0.5.2
         imagePullPolicy: Always
         name: stargazers
         args:
