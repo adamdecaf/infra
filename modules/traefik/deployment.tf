@@ -8,6 +8,12 @@ resource "kubernetes_deployment" "traefik" {
   }
   spec {
     replicas = var.instances
+    strategy {
+      type = "RollingUpdate"
+      rolling_update {
+        max_unavailable = var.max_unavailable
+      }
+    }
     selector {
       match_labels = {
         app = "traefik"

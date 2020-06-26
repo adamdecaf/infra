@@ -39,3 +39,7 @@ variable "image" {
 variable "capacity" {
   default = "1Gi"
 }
+
+variable "max_unavailable" {
+  default = 1
+}
