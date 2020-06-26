@@ -28,8 +28,12 @@ variable "nginx_exporter_tag" {
   default = "0.4.2"
 }
 
-variable "traefik_tag" {
-  default = "v2.2"
+# variable "traefik_tag" {
+#   default = "v2.2"
+# }
+
+variable "image" {
+  default = "adamdecaf/traefik-dev:acme-multireqs"
 }
 
 variable "capacity" {

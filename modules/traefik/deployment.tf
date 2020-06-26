@@ -106,7 +106,8 @@ resource "kubernetes_deployment" "traefik" {
           }
         }
         container {
-          image = "traefik:${var.traefik_tag}"
+          # image = "traefik:${var.traefik_tag}"
+          image = var.image
           image_pull_policy = "Always"
           name = "traefik"
           args = [
