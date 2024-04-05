@@ -314,6 +314,7 @@ linters-settings:
   forbidigo:
     forbid:
       - '^panic$'
+      - '^time.Sleep$'
 EOF
         # Add some specific overrides
         if [[ "$GOLANGCI_ALLOW_PRINT" != "yes" ]];

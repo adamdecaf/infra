@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPanicLinter(t *testing.T) {
+func TestForbidigo_Panic(t *testing.T) {
 	// The follow snippets of code should be allowed through by the go/lint-project.sh script.
 	r := regexp.MustCompile(`([a-z]+)`)
 	require.True(t, r.MatchString("abc"))
